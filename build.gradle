@@ -5,13 +5,24 @@ buildscript {
             name = "daporkchop" // 找了一辈子
             url = "https://maven.daporkchop.net/"
         }
-    }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-20210507.224146-40'
+        maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
+        maven { url = "https://jitpack.io/" }
     }
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'java'
+
+plugins {
+    id "java"
+    id "idea"
+    id "net.minecraftforge.gradle.forge"
+    id "org.spongepowered.mixin"
+}
+
+configurations {
+    resolvedRuntimeOnly {
+        extendsFrom runtimeOnly
+        canBeResolved = true
+    }
+}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -21,7 +32,8 @@ archivesBaseName = "template-mod"
 minecraft {
     version = "1.8.9-11.15.1.2318-1.8.9"
     runDir = "run"
-    mappings = "stable_20"
+    mappings = "stable_22"
+    makeObfSourceJar = false
 }
 
 processResources {
@@ -47,4 +59,16 @@ repositories {
 
 dependencies {
     implementation name: 'forgeBin-1.8.9-11.15.1.2318-1.8.9'
+}
+
+configurations.runtimeOnly.canBeResolved = true
+tasks.named("runClient") {
+    dependsOn.removeAll { it == configurations.runtimeOnly }
+
+    doFirst {
+        println("Using resolvedRuntimeOnly dependencies:")
+        configurations.resolvedRuntimeOnly.files.each {
+            println(it.name)
+        }
+    }
 }
