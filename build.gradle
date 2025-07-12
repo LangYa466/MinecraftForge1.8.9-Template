@@ -64,11 +64,4 @@ dependencies {
 configurations.runtimeOnly.canBeResolved = true
 tasks.named("runClient") {
     dependsOn.removeAll { it == configurations.runtimeOnly }
-
-    doFirst {
-        println("Using resolvedRuntimeOnly dependencies:")
-        configurations.resolvedRuntimeOnly.files.each {
-            println(it.name)
-        }
-    }
 }
